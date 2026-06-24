@@ -252,27 +252,65 @@ def main():
                 if sentiment == "Positive":
                     card_class = "pred-card-positive"
                     sentiment_color = "#2ECC71"
+                    sentiment_emoji = "🟢"
                 elif sentiment == "Negative":
                     card_class = "pred-card-negative"
                     sentiment_color = "#E74C3C"
+                    sentiment_emoji = "🔴"
                 else:
                     card_class = "pred-card-neutral"
                     sentiment_color = "#95A5A6"
+                    sentiment_emoji = "🟡"
                     
                 st.markdown(f"""
                 <div class="{card_class}">
-                    <h3 style="margin-top: 0; color: {sentiment_color};">{sentiment}</h3>
+                    <h3 style="margin-top: 0; color: {sentiment_color}; margin-bottom: 5px;">Sentiment: {sentiment} {sentiment_emoji}</h3>
                     <p style="font-size: 1.1rem; margin-bottom: 0;"><strong>Input text:</strong> "{user_tweet}"</p>
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Visual confidence bar
+                # Visual confidence bar with high resolution (1 decimal place)
                 st.write("")
                 col_lbl, col_bar = st.columns([1, 4])
                 with col_lbl:
-                    st.write(f"**Confidence:** `{confidence * 100:.0f}%`")
+                    st.write(f"**Confidence:** `{confidence * 100:.1f}%`")
                 with col_bar:
                     st.progress(confidence)
+                    
+                # Display Class Probabilities
+                st.write("")
+                st.markdown("### Class Probabilities")
+                
+                probs = result.get("probabilities", {})
+                p_pos = probs.get("Positive", 0.0)
+                p_neu = probs.get("Neutral", 0.0)
+                p_neg = probs.get("Negative", 0.0)
+                
+                col_pos, col_neu, col_neg = st.columns(3)
+                with col_pos:
+                    st.markdown(f"""
+                    <div style="background: rgba(46, 204, 113, 0.05); border: 1px solid rgba(46, 204, 113, 0.15); padding: 10px; border-radius: 8px; text-align: center;">
+                        <span style="color: #2ECC71; font-weight: bold; font-size: 0.95rem;">Positive 🟢</span>
+                        <h4 style="margin: 5px 0 0 0; color: #2ECC71; font-size: 1.5rem;">{p_pos * 100:.1f}%</h4>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.progress(p_pos)
+                with col_neu:
+                    st.markdown(f"""
+                    <div style="background: rgba(149, 165, 166, 0.05); border: 1px solid rgba(149, 165, 166, 0.15); padding: 10px; border-radius: 8px; text-align: center;">
+                        <span style="color: #95A5A6; font-weight: bold; font-size: 0.95rem;">Neutral 🟡</span>
+                        <h4 style="margin: 5px 0 0 0; color: #95A5A6; font-size: 1.5rem;">{p_neu * 100:.1f}%</h4>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.progress(p_neu)
+                with col_neg:
+                    st.markdown(f"""
+                    <div style="background: rgba(231, 76, 60, 0.05); border: 1px solid rgba(231, 76, 60, 0.15); padding: 10px; border-radius: 8px; text-align: center;">
+                        <span style="color: #E74C3C; font-weight: bold; font-size: 0.95rem;">Negative 🔴</span>
+                        <h4 style="margin: 5px 0 0 0; color: #E74C3C; font-size: 1.5rem;">{p_neg * 100:.1f}%</h4>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.progress(p_neg)
                 
                 # Display NLP Preprocessing Pipeline steps
                 st.write("")

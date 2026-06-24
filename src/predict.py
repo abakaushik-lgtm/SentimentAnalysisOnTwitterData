@@ -35,28 +35,33 @@ class SentimentPredictor:
         if not cleaned_text.strip():
             return {
                 "sentiment": "Neutral",
-                "confidence": 0.33,
+                "confidence": 0.3333,
                 "processed_text": "",
-                "tokens": []
+                "tokens": [],
+                "probabilities": {"Positive": 0.3333, "Neutral": 0.3334, "Negative": 0.3333}
             }
             
         # Get prediction
         prediction = self.pipeline.predict([cleaned_text])[0]
         
         # Get prediction probabilities for confidence score
+        prob_dict = {}
         try:
             probabilities = self.pipeline.predict_proba([cleaned_text])[0]
             class_idx = np.where(self.classes == prediction)[0][0]
             confidence = float(probabilities[class_idx])
+            prob_dict = {self.classes[i]: round(float(probabilities[i]), 4) for i in range(len(self.classes))}
         except Exception:
-            # Fallback if probability prediction is not supported (e.g. standard SVC without calibration)
+            # Fallback if probability prediction is not supported
             confidence = 1.0
+            prob_dict = {prediction: 1.0}
             
         return {
             "sentiment": prediction,
-            "confidence": round(confidence, 2),
+            "confidence": round(confidence, 4),
             "processed_text": cleaned_text,
-            "tokens": cleaned_text.split()
+            "tokens": cleaned_text.split(),
+            "probabilities": prob_dict
         }
 
 # Command-line utility to run manual tests
