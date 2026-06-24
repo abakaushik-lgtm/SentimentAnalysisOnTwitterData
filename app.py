@@ -98,6 +98,59 @@ def load_preprocessed_data():
         return df_train, df_val
     return None, None
 
+def create_plotly_wordcloud(word_counts, sentiment_color):
+    """
+    Generates a visually stunning, interactive word cloud using Plotly.
+    Arranges words in a spiral with sizes scaled by frequency.
+    """
+    common_words = word_counts.most_common(40)
+    if not common_words:
+        return go.Figure()
+        
+    words = [w[0] for w in common_words]
+    freqs = [w[1] for w in common_words]
+    
+    # Generate coordinates arranged in a spiral
+    import random
+    random.seed(42)
+    
+    x = []
+    y = []
+    for i in range(len(words)):
+        r = 0.15 + 0.85 * (i / len(words)) # Radius increases outwards
+        theta = i * 2.4 # Fermat spiral angle mapping
+        x.append(r * np.cos(theta))
+        y.append(r * np.sin(theta))
+        
+    max_freq = max(freqs) if freqs else 1
+    # Scale font sizes between 14px and 45px
+    sizes = [14 + 31 * (f / max_freq) for f in freqs]
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=x, y=y,
+        mode="text",
+        text=words,
+        textfont=dict(
+            size=sizes,
+            color=sentiment_color,
+            family="Outfit, Inter, sans-serif"
+        ),
+        hoverinfo="text",
+        hovertext=[f"Word: <b>{w}</b><br>Occurrences: <b>{f}</b>" for w, f in zip(words, freqs)]
+    ))
+    
+    fig.update_layout(
+        xaxis=dict(showgrid=False, showticklabels=False, zeroline=False, range=[-1.1, 1.1]),
+        yaxis=dict(showgrid=False, showticklabels=False, zeroline=False, range=[-1.1, 1.1]),
+        margin=dict(l=10, r=10, t=10, b=10),
+        height=400,
+        hovermode="closest",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)"
+    )
+    return fig
+
 # Main Streamlit logic
 def main():
     # Sidebar
@@ -209,10 +262,7 @@ def main():
                 st.markdown(f"""
                 <div class="{card_class}">
                     <h3 style="margin-top: 0; color: {sentiment_color};">{sentiment}</h3>
-                    <p style="font-size: 1.1rem; margin-bottom: 5px;"><strong>Input text:</strong> "{user_tweet}"</p>
-                    <p style="font-size: 0.95rem; color: #8899A6; margin-bottom: 0;">
-                        <strong>Cleaned text:</strong> {f"<em>{processed_text}</em>" if processed_text else "<em>(None after stopword removal)</em>"}
-                    </p>
+                    <p style="font-size: 1.1rem; margin-bottom: 0;"><strong>Input text:</strong> "{user_tweet}"</p>
                 </div>
                 """, unsafe_allow_html=True)
                 
@@ -223,6 +273,34 @@ def main():
                     st.write(f"**Confidence:** `{confidence * 100:.0f}%`")
                 with col_bar:
                     st.progress(confidence)
+                
+                # Display NLP Preprocessing Pipeline steps
+                st.write("")
+                st.markdown("### Preprocessing Pipeline Steps")
+                col_step1, col_step2, col_step3 = st.columns(3)
+                with col_step1:
+                    st.markdown(f"""
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; min-height: 100px;">
+                        <span style="color: #1DA1F2; font-size: 0.85rem; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">1. Original Tweet</span>
+                        <p style="margin: 5px 0 0 0; font-size: 0.95rem; font-style: italic;">"{user_tweet}"</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                with col_step2:
+                    st.markdown(f"""
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; min-height: 100px;">
+                        <span style="color: #E0245E; font-size: 0.85rem; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">2. Cleaned text</span>
+                        <p style="margin: 5px 0 0 0; font-size: 0.95rem; font-style: italic;">{processed_text if processed_text else "(empty after cleaning)"}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                with col_step3:
+                    tokens_list = result.get("tokens", [])
+                    tokens_html = " ".join([f'<span style="background: rgba(29,161,242,0.15); color: #1DA1F2; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; margin-right: 4px; display: inline-block; margin-bottom: 4px;">{t}</span>' for t in tokens_list]) if tokens_list else "(no tokens)"
+                    st.markdown(f"""
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; min-height: 100px;">
+                        <span style="color: #17BF63; font-size: 0.85rem; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">3. Tokens (Lemmas)</span>
+                        <div style="margin-top: 5px;">{tokens_html}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
         # Sample tweets selection cards
         st.write("")
@@ -427,19 +505,26 @@ def main():
                 "Neutral": "#3498DB"
             }.get(selected_word_sent, "#1DA1F2")
             
-            fig_words = px.bar(
-                df_words_chart,
-                x="Frequency",
-                y="Word",
-                orientation="h",
-                title=f"Top {top_n} Words in {selected_word_sent} Tweets",
-                height=500,
-                labels={"Frequency": "Occurrences", "Word": "Vocabulary Word"}
-            )
-            fig_words.update_layout(yaxis={'categoryorder': 'total ascending'}, margin=dict(l=60, r=40, t=40, b=10))
-            fig_words.update_traces(marker_color=color_theme)
+            col_wc, col_bc = st.columns(2)
             
-            st.plotly_chart(fig_words, use_container_width=True)
+            with col_wc:
+                st.markdown(f"### ☁️ Interactive Word Cloud ({selected_word_sent})")
+                fig_wc = create_plotly_wordcloud(word_counts, color_theme)
+                st.plotly_chart(fig_wc, use_container_width=True)
+                
+            with col_bc:
+                st.markdown(f"### 📊 Word Frequencies ({selected_word_sent})")
+                fig_words = px.bar(
+                    df_words_chart,
+                    x="Frequency",
+                    y="Word",
+                    orientation="h",
+                    height=400,
+                    labels={"Frequency": "Occurrences", "Word": "Vocabulary Word"}
+                )
+                fig_words.update_layout(yaxis={'categoryorder': 'total ascending'}, margin=dict(l=60, r=40, t=10, b=10))
+                fig_words.update_traces(marker_color=color_theme)
+                st.plotly_chart(fig_words, use_container_width=True)
         else:
             st.info("Word frequency data not cached. Run training to create data cache.")
 

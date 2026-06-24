@@ -36,7 +36,8 @@ class SentimentPredictor:
             return {
                 "sentiment": "Neutral",
                 "confidence": 0.33,
-                "processed_text": ""
+                "processed_text": "",
+                "tokens": []
             }
             
         # Get prediction
@@ -54,7 +55,8 @@ class SentimentPredictor:
         return {
             "sentiment": prediction,
             "confidence": round(confidence, 2),
-            "processed_text": cleaned_text
+            "processed_text": cleaned_text,
+            "tokens": cleaned_text.split()
         }
 
 # Command-line utility to run manual tests
