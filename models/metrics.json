@@ -1,0 +1,203 @@
+{
+    "best_model": "svm",
+    "results": {
+        "naive_bayes": {
+            "accuracy": 0.8391777509068924,
+            "precision": 0.8445227065036881,
+            "recall": 0.8391777509068924,
+            "f1_score": 0.8380512464981078,
+            "classification_report": {
+                "Negative": {
+                    "precision": 0.782608695652174,
+                    "recall": 0.8830188679245283,
+                    "f1-score": 0.8297872340425532,
+                    "support": 265.0
+                },
+                "Neutral": {
+                    "precision": 0.8936170212765957,
+                    "recall": 0.7368421052631579,
+                    "f1-score": 0.8076923076923077,
+                    "support": 285.0
+                },
+                "Positive": {
+                    "precision": 0.8532423208191127,
+                    "recall": 0.9025270758122743,
+                    "f1-score": 0.8771929824561403,
+                    "support": 277.0
+                },
+                "accuracy": 0.8391777509068924,
+                "macro avg": {
+                    "precision": 0.8431560125826275,
+                    "recall": 0.8407960163333201,
+                    "f1-score": 0.8382241747303337,
+                    "support": 827.0
+                },
+                "weighted avg": {
+                    "precision": 0.8445227065036881,
+                    "recall": 0.8391777509068924,
+                    "f1-score": 0.8380512464981078,
+                    "support": 827.0
+                }
+            },
+            "confusion_matrix": [
+                [
+                    234,
+                    15,
+                    16
+                ],
+                [
+                    48,
+                    210,
+                    27
+                ],
+                [
+                    17,
+                    10,
+                    250
+                ]
+            ],
+            "classes": [
+                "Negative",
+                "Neutral",
+                "Positive"
+            ],
+            "training_time_sec": 2.063767671585083
+        },
+        "logistic_regression": {
+            "accuracy": 0.9201934703748489,
+            "precision": 0.9222096286694887,
+            "recall": 0.9201934703748489,
+            "f1_score": 0.9202709589004864,
+            "classification_report": {
+                "Negative": {
+                    "precision": 0.8896797153024911,
+                    "recall": 0.9433962264150944,
+                    "f1-score": 0.9157509157509157,
+                    "support": 265.0
+                },
+                "Neutral": {
+                    "precision": 0.9655172413793104,
+                    "recall": 0.8842105263157894,
+                    "f1-score": 0.9230769230769231,
+                    "support": 285.0
+                },
+                "Positive": {
+                    "precision": 0.9087719298245615,
+                    "recall": 0.9350180505415162,
+                    "f1-score": 0.9217081850533808,
+                    "support": 277.0
+                },
+                "accuracy": 0.9201934703748489,
+                "macro avg": {
+                    "precision": 0.9213229621687877,
+                    "recall": 0.9208749344241333,
+                    "f1-score": 0.9201786746270733,
+                    "support": 827.0
+                },
+                "weighted avg": {
+                    "precision": 0.9222096286694887,
+                    "recall": 0.9201934703748489,
+                    "f1-score": 0.9202709589004864,
+                    "support": 827.0
+                }
+            },
+            "confusion_matrix": [
+                [
+                    250,
+                    4,
+                    11
+                ],
+                [
+                    18,
+                    252,
+                    15
+                ],
+                [
+                    13,
+                    5,
+                    259
+                ]
+            ],
+            "classes": [
+                "Negative",
+                "Neutral",
+                "Positive"
+            ],
+            "training_time_sec": 3.740295648574829
+        },
+        "svm": {
+            "accuracy": 0.9250302297460702,
+            "precision": 0.9281121490171552,
+            "recall": 0.9250302297460702,
+            "f1_score": 0.9249433214629825,
+            "classification_report": {
+                "Negative": {
+                    "precision": 0.8854166666666666,
+                    "recall": 0.9622641509433962,
+                    "f1-score": 0.9222423146473779,
+                    "support": 265.0
+                },
+                "Neutral": {
+                    "precision": 0.9763779527559056,
+                    "recall": 0.8701754385964913,
+                    "f1-score": 0.9202226345083488,
+                    "support": 285.0
+                },
+                "Positive": {
+                    "precision": 0.9192982456140351,
+                    "recall": 0.9458483754512635,
+                    "f1-score": 0.9323843416370107,
+                    "support": 277.0
+                },
+                "accuracy": 0.9250302297460702,
+                "macro avg": {
+                    "precision": 0.9270309550122023,
+                    "recall": 0.9260959883303838,
+                    "f1-score": 0.9249497635975792,
+                    "support": 827.0
+                },
+                "weighted avg": {
+                    "precision": 0.9281121490171552,
+                    "recall": 0.9250302297460702,
+                    "f1-score": 0.9249433214629825,
+                    "support": 827.0
+                }
+            },
+            "confusion_matrix": [
+                [
+                    255,
+                    1,
+                    9
+                ],
+                [
+                    23,
+                    248,
+                    14
+                ],
+                [
+                    10,
+                    5,
+                    262
+                ]
+            ],
+            "classes": [
+                "Negative",
+                "Neutral",
+                "Positive"
+            ],
+            "training_time_sec": 9.092518091201782
+        }
+    },
+    "class_distribution": {
+        "train": {
+            "Negative": 21893,
+            "Positive": 20152,
+            "Neutral": 17631
+        },
+        "val": {
+            "Neutral": 285,
+            "Positive": 277,
+            "Negative": 265
+        }
+    }
+}

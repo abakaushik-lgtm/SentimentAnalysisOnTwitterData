@@ -1,0 +1,21 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Data cache (these are downloaded programmatically)
+data/
+
+# IDE files
+.vscode/
+.idea/
+
+# Streamlit config (if any local user config)
+.streamlit/
